@@ -87,10 +87,14 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
 
         dates = lesson.get("dates", [])
         
-        # Limit dates to only this week and next week (-1 day to +14 days)
+        # Calculate the start of the current week (Monday 00:00:00)
         now_dt = datetime.now(tz)
-        start_window = now_dt - timedelta(days=1)
-        end_window = now_dt + timedelta(days=14)
+        current_weekday = now_dt.weekday() # 0 = Monday, 6 = Sunday
+        start_window = (now_dt - timedelta(days=current_weekday)).replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # Calculate the end of next week (Next Sunday 23:59:59)
+        days_to_next_sunday = 13 - current_weekday
+        end_window = (now_dt + timedelta(days=days_to_next_sunday)).replace(hour=23, minute=59, second=59, microsecond=999999)
 
         for date_str in dates:
              # date_str: YYYYMMDD
