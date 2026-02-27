@@ -37,4 +37,6 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add davinci_schedule.ics
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update schedule" && git push)
+          # Force commit even if it thinks there are no changes, just to be sure the new small file is pushed.
+          git commit -m "chore: update schedule" || echo "No changes to commit"
+          git push
