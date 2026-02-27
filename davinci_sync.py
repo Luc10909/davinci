@@ -86,6 +86,12 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
         description = f"Lehrer: {teacher}{note}"
 
         dates = lesson.get("dates", [])
+        
+        # Limit dates to a reasonable window (e.g., -14 days to +180 days)
+        now_dt = datetime.now()
+        start_window = now_dt - timedelta(days=14)
+        end_window = now_dt + timedelta(days=180)
+
         for date_str in dates:
              # date_str: YYYYMMDD
              start_dt_str = f"{date_str}{start_time_str}"
@@ -94,6 +100,10 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
              try:
                  start_dt = datetime.strptime(start_dt_str, "%Y%m%d%H%M")
                  end_dt = datetime.strptime(end_dt_str, "%Y%m%d%H%M")
+                 
+                 # Skip if outside our sync window to keep ICS file small
+                 if start_dt < start_window or start_dt > end_window:
+                     continue
                  
                  # Localize
                  start_dt = tz.localize(start_dt)
@@ -104,7 +114,6 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
                  end_utc = end_dt.astimezone(pytz.utc).strftime("%Y%m%dT%H%M%SZ")
                  
                  # Create a unique ID for this specific lesson and date so calendar apps can OVERWRITE it instead of duplicating.
-                 # E.g. uid = subjectCode-date-startTime@davinci.sync
                  uid = f"davinci-{subject.replace(' ', '')}-{date_str}-{start_time_str}@sync"
                  
                  stamp = datetime.now(pytz.utc).strftime("%Y%m%dT%H%M%SZ")
