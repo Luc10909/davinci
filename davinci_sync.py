@@ -87,10 +87,10 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
 
         dates = lesson.get("dates", [])
         
-        # Limit dates to a reasonable window (e.g., -14 days to +180 days)
+        # Limit dates to only this week and next week (-1 day to +14 days)
         now_dt = datetime.now()
-        start_window = now_dt - timedelta(days=14)
-        end_window = now_dt + timedelta(days=180)
+        start_window = now_dt - timedelta(days=1)
+        end_window = now_dt + timedelta(days=14)
 
         for date_str in dates:
              # date_str: YYYYMMDD
