@@ -32,12 +32,9 @@ jobs:
         run: |
           python davinci_sync.py --url "$DAVINCI_URL" --user "$DAVINCI_USER" --password "$DAVINCI_PASS" --output davinci_schedule.ics
 
-      - name: Deploy to GitHub Pages (gh-pages branch)
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          publish_branch: gh-pages
-          force_orphan: true
-          # Only publish the ICS file
-          exclude: "**/*.py, **/*.yml"
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add davinci_schedule.ics
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update schedule" && git push)
