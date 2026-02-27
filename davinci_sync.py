@@ -88,7 +88,7 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
         dates = lesson.get("dates", [])
         
         # Limit dates to only this week and next week (-1 day to +14 days)
-        now_dt = datetime.now()
+        now_dt = datetime.now(tz)
         start_window = now_dt - timedelta(days=1)
         end_window = now_dt + timedelta(days=14)
 
@@ -101,13 +101,13 @@ def generate_ics(schedule_data, output_file="davinci_schedule.ics"):
                  start_dt = datetime.strptime(start_dt_str, "%Y%m%d%H%M")
                  end_dt = datetime.strptime(end_dt_str, "%Y%m%d%H%M")
                  
+                 # Localize FIRST before comparing
+                 start_dt = tz.localize(start_dt)
+                 end_dt = tz.localize(end_dt)
+                 
                  # Skip if outside our sync window to keep ICS file small
                  if start_dt < start_window or start_dt > end_window:
                      continue
-                 
-                 # Localize
-                 start_dt = tz.localize(start_dt)
-                 end_dt = tz.localize(end_dt)
                  
                  # To UTC for ICS
                  start_utc = start_dt.astimezone(pytz.utc).strftime("%Y%m%dT%H%M%SZ")
