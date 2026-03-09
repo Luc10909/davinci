@@ -129,7 +129,7 @@ def fetch_and_generate_ics():
     lines.append("END:VCALENDAR")
     
     with open("schedule.ics", "w", encoding="utf-8") as f:
-        f.write("\\r\\n".join(lines))
+        f.write("\r\n".join(lines))
     print("Successfully generated schedule.ics")
 
 if __name__ == "__main__":
